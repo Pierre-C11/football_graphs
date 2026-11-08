@@ -607,7 +607,6 @@ def add_match_title(fig, metadata, colours):
         color="black",
         fontsize=9,
         style= "italic",
-
     )
     
 # Main function
