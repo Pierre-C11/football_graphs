@@ -595,8 +595,20 @@ def add_match_title(fig, metadata, colours):
         bbox_transform=fig.transFigure,
         borderpad=0,
     )
-
     fig.add_artist(title_anchor)
+
+    #Left subtitle (competition & league info)
+    fig.text(
+        0.99,
+        0.01,
+        f"{metadata['competition']} {metadata['date']}\nFrom @pchevalier.bsky.social",
+        ha="right",
+        va="bottom",
+        color="black",
+        fontsize=9,
+        style= "italic",
+
+    )
     
 # Main function
 def generate_worm_graph(event_id):
