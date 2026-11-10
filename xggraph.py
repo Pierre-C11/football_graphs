@@ -258,26 +258,23 @@ def add_goal_annotations(ax, team_shots, shots, team_colour, assists, ymax):
         else:
             oppo_y = 0
 
-        label = goal_label(shot, assists)   #construct the label text
-        
+        label = goal_label(shot, assists)   #construct the label text       
         #shift_direction: 3 cases depending where is space: above lines, between or below? Here: basic first shift leftup, left, or rightdown
-        if y >= oppo_y:
+        if y >= oppo_y or (y < abs(oppo_y - y) and y < 0.8*ymax):
             shift_direction_x = -1  #left
             shift_direction_y = 1   #up
-            label_x = x - 270
+            label_x = x - 700
             label_y = y + ymax * 0.05
-
         elif y < abs(oppo_y - y):
             shift_direction_x = 1   #right
             shift_direction_y = 0   #stall
-            label_x = x
+            label_x = x - 150
             label_y = y + ymax * 0.04 #slightly up: can only get here if y is smaller than oppo_y
-
         else:
             shift_direction_x = 1  #right
             shift_direction_y = -1  #down
-            label_x = x + 420
-            label_y = y * 0.75 + (-0.1 * abs(oppo_y - y) / ymax)
+            label_x = x + 600
+            label_y = y * 0.5 + (-0.2 * abs(oppo_y - y) / ymax)
 
         counter = 0 #loop counter to maintain max 5
         x_shifted = 0   #shift distance tracker
@@ -312,7 +309,7 @@ def add_goal_annotations(ax, team_shots, shots, team_colour, assists, ymax):
             xytext=(label_x, label_y),
             ha="center",
             va="bottom",
-            fontsize=8,
+            fontsize=10.5,
             linespacing=1.15,
             color=team_colour["secondary"],
             bbox={
@@ -320,7 +317,7 @@ def add_goal_annotations(ax, team_shots, shots, team_colour, assists, ymax):
                 "facecolor": team_colour["primary"],
                 "edgecolor": team_colour["secondary"],
                 "linewidth": 1.4,
-                "alpha": 0.3,
+                "alpha": 0.4,
             },
             arrowprops={
                 "arrowstyle": "-",
@@ -329,7 +326,7 @@ def add_goal_annotations(ax, team_shots, shots, team_colour, assists, ymax):
                 "shrinkA": 1,
                 "shrinkB": 0,
             },
-            zorder=4,
+            zorder=1,
         )
         texts.append(scorer_text)
 
@@ -372,7 +369,7 @@ def configure_half_axis(ax, half, endpoint, incidents):
             )
         else:
             labels.append(format_clock(tick))
-    ax.tick_params(axis="x", labelsize=8)   #change size of minutes ticks
+    ax.tick_params(axis="x", labelsize=9.5)   #change size of minutes tick labels
     ax.set_xticks(ticks)
     ax.set_xticklabels(labels)
     # Grid lines follow both x-axis and y-axis ticks.
@@ -443,7 +440,7 @@ def add_incident_markers(ax, incidents, half):
             transform=ax.get_xaxis_transform(),
             ha="right",
             va="top",
-            fontsize=8,
+            fontsize=10.5,
         )
 
 # xG lines and goal markers
@@ -494,10 +491,10 @@ def add_team_plot(ax, shots, half, is_home, colour, endpoint):
         x_values,
         y_values,
         color=colour["primary"],
-        linewidth=2.2,
+        linewidth=6,
         path_effects=[
             pe.Stroke(
-                linewidth=3.8,
+                linewidth=8.5,
                 foreground=colour["secondary"],
             ),
             pe.Normal(),
@@ -515,10 +512,10 @@ def add_team_plot(ax, shots, half, is_home, colour, endpoint):
         ax.scatter(
             goals["timeSeconds"].to_numpy(),
             goals["cumulative_xg"].to_numpy(),
-            s=38,
+            s=78,
             facecolor=colour["primary"],
             edgecolor=colour["secondary"],
-            linewidth=1.2,
+            linewidth=2,
             zorder=5,
         )
 
@@ -546,7 +543,7 @@ def add_total_xg_label(ax, shots, is_home, colour, endpoint, metadata, ymax):
         transform=label_transform,
         ha="left",
         va="top",
-        fontsize=9,
+        fontsize=12.5,
         color=colour["secondary"],
         clip_on=False,
         bbox={
@@ -565,22 +562,21 @@ def add_match_title(fig, metadata, colours):
             text,
             textprops={
                 "color": team_colour["primary"],
-                "fontsize": 21,
+                "fontsize": 32.5,
                 "path_effects": [
                     pe.Stroke(
-                        linewidth=1.5,
+                        linewidth=3,
                         foreground=team_colour["secondary"],
                     ),
                     pe.Normal(),
                 ],
                 "family": "Cambria",
-                "weight": "bold"
             },
         )
 
     title = HPacker(
         children=[
-            title_text(f"{metadata["home"]} {metadata['home_score']} ", colours["home"]), 
+            title_text(f"{metadata["home"]} {metadata['home_score']}", colours["home"]), 
             title_text(f" {metadata['away_score']} {metadata["away"]}", colours["away"]),
         ],
         align="center",
@@ -591,7 +587,7 @@ def add_match_title(fig, metadata, colours):
         loc="upper center",
         child=title,
         frameon=False,
-        bbox_to_anchor=(0.485, 0.98),
+        bbox_to_anchor=(0.485, 0.975),
         bbox_transform=fig.transFigure,
         borderpad=0,
     )
@@ -605,7 +601,7 @@ def add_match_title(fig, metadata, colours):
         ha="right",
         va="bottom",
         color="black",
-        fontsize=9,
+        fontsize=9.5,
         style= "italic",
     )
     
@@ -624,11 +620,11 @@ def generate_worm_graph(event_id):
     fig, (ax1, ax2) = plt.subplots(
         1,
         2,
-        figsize=(10, 7),                #controls printed graph size
+        figsize=(10, 8),                #controls printed graph size
         sharey=True,
         gridspec_kw={
             "width_ratios": [1, 1],
-            "wspace": 0.11,
+            "wspace": 0.21,
         },
     )
 
@@ -724,7 +720,7 @@ def generate_worm_graph(event_id):
     )
 
     #tick and spine parameters
-    ax1.set_ylabel("Accumulated xG", labelpad=12)
+    ax1.set_ylabel("Accumulated xG", labelpad=12, fontsize=14)
     ax2.spines["left"].set_visible(False)
     ax2.tick_params(axis="y", which="major", left=False, labelleft=False)
     ax2.tick_params(axis="y", which="minor", left=False, labelleft=False)
@@ -775,12 +771,13 @@ def generate_worm_graph(event_id):
         transform=ax1.get_xaxis_transform(),
         ha="center",
         va="top",
+        fontsize=13.5
     )
     fig.subplots_adjust(            #margins around plot adjusted here. need to change to fit in substitutinos
-        top=0.9,
-        bottom=0.1,
-        left=0.14,
-        right=0.86,
+        top=0.85,
+        bottom=0.14,
+        left=0.09,
+        right=0.81,
         wspace=0.08,
     )
 
